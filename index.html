@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>여러개 마커에 이벤트 등록하기1</title>
+    
+</head>
+<body>
+<div id="map" style="width:100%;height:350px;"></div>
+
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=발급받은 APP KEY를 사용하세요"></script>
+<script>
+var mapContainer = document.getElementById('map'), // 지도를 표시할 div  
+    mapOption = { 
+        center: new kakao.maps.LatLng(37.57249087, 127.0555981), // 지도의 중심좌표
+        level: 3 // 지도의 확대 레벨
+    };
+
+var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
+ 
+// 마커를 표시할 위치와 내용을 가지고 있는 객체 배열입니다 
+var positions = [
+   {
+content: '<div>점핑스타 회기점</div>',
+latlng: new kakao.maps.LatLng(37.5913237,127.05003)
+},
+{
+content: '<div>꼬마빌리지</div>',
+latlng: new kakao.maps.LatLng(37.59097432,127.0644169)
+},
+{
+content: '<div>트램폴린파크 장안점</div>',
+latlng: new kakao.maps.LatLng(37.57235538,127.074805)
+},
+{
+content: '<div>비지비 키즈카페</div>',
+latlng: new kakao.maps.LatLng(37.57190944,127.0739179)
+},
+{
+content: '<div>리틀비틀 키즈카페</div>',
+latlng: new kakao.maps.LatLng(37.57235538,127.074805)
+},
+{
+content: '<div>키즈인런던</div>',
+latlng: new kakao.maps.LatLng(37.57249087,127.0555981)
+},
+{
+content: '<div>아이앤맘 키즈카페</div>',
+latlng: new kakao.maps.LatLng(37.58960091,127.0613666)
+},
+{
+content: '<div>쁘띠몽드 장안점</div>',
+latlng: new kakao.maps.LatLng(37.57816314,127.0678834)
+},
+{
+content: '<div>스토리방방</div>',
+latlng: new kakao.maps.LatLng(37.5686646,127.0573874)
+},
+{
+content: '<div>노리팡팡</div>',
+latlng: new kakao.maps.LatLng(37.57285173,127.0721544)
+},
+{
+content: '<div>롤리폴리</div>',
+latlng: new kakao.maps.LatLng(37.57781485,127.0617429)
+},
+{
+content: '<div>원풀키즈카페</div>',
+latlng: new kakao.maps.LatLng(37.56896985,127.0735885)
+},
+{
+content: '<div>키즈필 동대문점</div>',
+latlng: new kakao.maps.LatLng(37.59097432,127.0644169)
+},
+{
+content: '<div>점프노리</div>',
+latlng: new kakao.maps.LatLng(37.56614324,127.0619734)
+},
+{
+content: '<div>츄츄볼리</div>',
+latlng: new kakao.maps.LatLng(37.58023183,127.0492289)
+},
+{
+content: '<div>시티스마트존 (박성준 )</div>',
+latlng: new kakao.maps.LatLng(37.5692243,127.0501516)
+},
+{
+content: '<div>주식회사 엔컴플러스</div>',
+latlng: new kakao.maps.LatLng(37.57192418,127.0723876)
+}
+];
+
+for (var i = 0; i < positions.length; i ++) {
+    // 마커를 생성합니다
+    var marker = new kakao.maps.Marker({
+        map: map, // 마커를 표시할 지도
+        position: positions[i].latlng // 마커의 위치
+    });
+
+    // 마커에 표시할 인포윈도우를 생성합니다 
+    var infowindow = new kakao.maps.InfoWindow({
+        content: positions[i].content // 인포윈도우에 표시할 내용
+    });
+
+    // 마커에 mouseover 이벤트와 mouseout 이벤트를 등록합니다
+    // 이벤트 리스너로는 클로저를 만들어 등록합니다 
+    // for문에서 클로저를 만들어 주지 않으면 마지막 마커에만 이벤트가 등록됩니다
+    kakao.maps.event.addListener(marker, 'mouseover', makeOverListener(map, marker, infowindow));
+    kakao.maps.event.addListener(marker, 'mouseout', makeOutListener(infowindow));
+}
+
+// 인포윈도우를 표시하는 클로저를 만드는 함수입니다 
+function makeOverListener(map, marker, infowindow) {
+    return function() {
+        infowindow.open(map, marker);
+    };
+}
+
+// 인포윈도우를 닫는 클로저를 만드는 함수입니다 
+function makeOutListener(infowindow) {
+    return function() {
+        infowindow.close();
+    };
+}
+
+/* 아래와 같이도 할 수 있습니다 */
+/*
+for (var i = 0; i < positions.length; i ++) {
+    // 마커를 생성합니다
+    var marker = new kakao.maps.Marker({
+        map: map, // 마커를 표시할 지도
+        position: positions[i].latlng // 마커의 위치
+    });
+
+    // 마커에 표시할 인포윈도우를 생성합니다 
+    var infowindow = new kakao.maps.InfoWindow({
+        content: positions[i].content // 인포윈도우에 표시할 내용
+    });
+
+    // 마커에 이벤트를 등록하는 함수 만들고 즉시 호출하여 클로저를 만듭니다
+    // 클로저를 만들어 주지 않으면 마지막 마커에만 이벤트가 등록됩니다
+    (function(marker, infowindow) {
+        // 마커에 mouseover 이벤트를 등록하고 마우스 오버 시 인포윈도우를 표시합니다 
+        kakao.maps.event.addListener(marker, 'mouseover', function() {
+            infowindow.open(map, marker);
+        });
+
+        // 마커에 mouseout 이벤트를 등록하고 마우스 아웃 시 인포윈도우를 닫습니다
+        kakao.maps.event.addListener(marker, 'mouseout', function() {
+            infowindow.close();
+        });
+    })(marker, infowindow);
+}
+*/
+</script>
+</body>
+</html>
